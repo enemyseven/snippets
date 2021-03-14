@@ -5,6 +5,7 @@ watermark and save it to disk.
 """
 from PIL import Image, ImageDraw, ImageFont
 
+# Make new image with alpha channel
 image = Image.new('RGBA', (1920, 1080), color = (255, 0, 0, 0))
 width, height = image.size
 
