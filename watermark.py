@@ -1,4 +1,8 @@
 #! /usr/bin/env python3
+"""
+Create a new image for use as a
+watermark and save it to disk.
+"""
 from PIL import Image, ImageDraw, ImageFont
 
 image = Image.new('RGBA', (1920, 1080), color = (255, 0, 0, 0))
