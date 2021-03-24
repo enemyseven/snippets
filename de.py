@@ -1,15 +1,17 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
-# Download Everything
-# Download URLs from text file(s)
-# version 2.92
+# Name: Download Everything
+# Description: Download URLs from text file(s) containing URLs
+# Version: 2.93
+# Last Modified: 2021.03.24
 """
 
 import logging
 import os
 import time
 import glob
-import urllib
+import urllib.request
+import urllib.error
 
 # Setting script call time
 callTime = time.time()
@@ -25,13 +27,14 @@ category = ""
 
 # Setup logging information
 # Get current Process ID for error log
+# Maybe date and time would be better than pid
 pid = os.getpid()
 errorlogname = "de-" + str(pid) + "-error.log"
 logging.basicConfig(format='%(asctime)s %(message)s', filename=errorlogname, level=logging.ERROR)
 
 # Can filter Using this.
 textFiles = glob.glob("*-urls.txt")
-print "Using Files:\t" + str(textFiles).strip('[]')
+print("Using Files:\t" + str(textFiles).strip('[]'))
 
 # Replace this with something that reads all .txt files into the list
 for textFile in textFiles:
@@ -39,10 +42,10 @@ for textFile in textFiles:
         urls.extend(f.read().splitlines())
 
 for url in urls:
-    if url == "\n":
-        print(url + " is newline.")
+    print("Looking at: " + url)
+    if url.strip() == "":
+        print("Warning: line is empty: " + url)
         break
-    print url
 
     filename = url[url.rfind('/') + 1:]
     fileExtension = filename[filename.rfind('.') + 1:].lower()
@@ -73,14 +76,14 @@ for url in urls:
 
     if os.path.isfile( category + "/" + filename ):
         # File does not exist. So Download it.
-        print(filename + " already exists.")
+        print("Warning: " + filename + " already exists.")
         logging.warning(filename + " Already Exists.")
         filesSkipped += 1
     else:
         print(filename)
         try:
-            resp = urllib.urlopen(url)
-        except URLError as e:
+            resp = urllib.request.urlopen(url)
+        except urllib.error.URLError as e:
             if hasattr(e, 'reason'):
                 logging.error("Error: Failed to reach the server for " + filename)
                 print('Failed to reach the server.')
@@ -92,18 +95,17 @@ for url in urls:
         else:
             if resp.getcode() != 200:
                 logging.error("Error: " + filename + " Not found on server.")
-                print "Error: " + filename + " not found on server."
+                print("Error: " + filename + " not found on server.")
                 errorOccured = True
             else:
-                with open( category + "/" + filename, "w") as newfile:
+                with open( category + "/" + filename, "wb") as newfile:
                     newfile.write(resp.read())
-                    logging.info(filename + ": OK.")
-                    print "Processing " + filename + ": OK."
+                    logging.info(filename + " OK.")
+                    print("Processing " + filename + " OK.")
                     filesWritten += 1
 
-print "\t\t\t-- Finished --\n\tFiles Written:\t\t" + str(filesWritten) + "\t\tFiles Skipped:\t" + str(filesSkipped)
+print("\t\t\t-- Finished --\n\tFiles Written:\t\t" + str(filesWritten) + "\t\tFiles Skipped:\t" + str(filesSkipped))
 
 if errorOccured:
-    print "\t\t\t-- An error(s) occurred while downloading file. --"
-    print "\t\tPlease check " + errorlogname + " for more information."
-
+    print("\t\t\t-- An error(s) occurred while downloading file. --")
+    print("\t\tPlease check " + errorlogname + " for more information.")
