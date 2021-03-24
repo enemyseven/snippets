@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-
+"""
 # Download Everything
 # Download URLs from text file(s)
 # version 2.92
+"""
 
 import logging
 import os
@@ -60,7 +61,7 @@ for url in urls:
     elif fileExtension == "gif":
         category = "gif"
     else:
-        category = "unknown"
+        category = "other"
 
     # loop through them and prepend the domain name and folder
     logging.info("Processing " + filename)
