@@ -34,7 +34,7 @@ logging.basicConfig(format='%(asctime)s %(message)s', filename=errorlogname, lev
 
 # Can filter Using this.
 textFiles = glob.glob("*-urls.txt")
-print("Using Files:\t" + str(textFiles).strip('[]'))
+print("Using Files:\t" + str(textFiles).strip('[]') + "\n")
 
 # Replace this with something that reads all .txt files into the list
 for textFile in textFiles:
@@ -42,9 +42,9 @@ for textFile in textFiles:
         urls.extend(f.read().splitlines())
 
 for url in urls:
-    print("Looking at: " + url)
+    # Silence Empty line errors.
     if url.strip() == "":
-        print("Warning: line is empty: " + url)
+        #print("Error: Encounted empty line")
         break
 
     filename = url[url.rfind('/') + 1:]
@@ -74,13 +74,14 @@ for url in urls:
         # If not create it
         os.makedirs(category)
 
+    print("Processing: " + filename)
+            
     if os.path.isfile( category + "/" + filename ):
         # File does not exist. So Download it.
-        print("Warning: " + filename + " already exists.")
-        logging.warning(filename + " Already Exists.")
+        print("\tStatus: file already exists.")
+        logging.warning("Warning: " + filename + " already Exists.")
         filesSkipped += 1
     else:
-        print(filename)
         try:
             resp = urllib.request.urlopen(url)
         except urllib.error.URLError as e:
@@ -95,16 +96,16 @@ for url in urls:
         else:
             if resp.getcode() != 200:
                 logging.error("Error: " + filename + " Not found on server.")
-                print("Error: " + filename + " not found on server.")
+                print("\tError: " + filename + " not found on server.")
                 errorOccured = True
             else:
                 with open( category + "/" + filename, "wb") as newfile:
                     newfile.write(resp.read())
                     logging.info(filename + " OK.")
-                    print("Processing " + filename + " OK.")
+                    print("\tStatus: Success")
                     filesWritten += 1
 
-print("\t\t\t-- Finished --\n\tFiles Written:\t\t" + str(filesWritten) + "\t\tFiles Skipped:\t" + str(filesSkipped))
+print("\n\t\t\t-- Finished --\n\tFiles Written:\t\t" + str(filesWritten) + "\t\tFiles Skipped:\t" + str(filesSkipped))
 
 if errorOccured:
     print("\t\t\t-- An error(s) occurred while downloading file. --")
