@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 # Name: Download Everything
-# Description: Download URLs from text file(s) containing URLs
+# Description: Download files from URLs contained in text files.
 # Version: 2.93
 # Last Modified: 2021.03.24
 """
