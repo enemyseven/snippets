@@ -68,18 +68,18 @@ for url in urls:
         category = "other"
 
     # loop through them and prepend the domain name and folder
-    logging.info("Processing " + filename)
     
     # Check if category directory exists.
     if not os.path.isdir(category):
         # If not create it
         os.makedirs(category)
 
-    print("Processing: " + filename)
+    logging.info("Processing " + filename)
+    print("\nProcessing:\t" + filename)
             
     if os.path.isfile( category + "/" + filename ):
         # File does not exist. So Download it.
-        print("\tStatus: file already exists.")
+        print("\t\tStatus: file already exists.")
         logging.warning("Warning: " + filename + " already Exists.")
         filesSkipped += 1
     else:
@@ -92,22 +92,22 @@ for url in urls:
                 print('Reason: ', e.reason)
             elif hasattr(e, 'code'):
                 logging.error("Error: Server couldn't fulfill the request for "+ filename)
-                print('The server couldn\'t fulfill the request.')
-                print('Error code: ', e.code)
+                print('\t\tThe server couldn\'t fulfill the request.')
+                print('\t\tError code: ', e.code)
         else:
             if resp.getcode() != 200:
                 logging.error("Error: " + filename + " Not found on server.")
-                print("\tError: " + filename + " not found on server.")
+                print("\t\tError: " + filename + " not found on server.")
                 errorOccured = True
             else:
                 with open( category + "/" + filename, "wb") as newfile:
                     newfile.write(resp.read())
                     logging.info(filename + " OK.")
-                    print("\tStatus: Success")
+                    print("\t\tStatus: Success")
                     filesWritten += 1
 
-print("\n\t\t\t-- Finished --\n\tFiles Written:\t\t" + str(filesWritten) + "\t\tFiles Skipped:\t" + str(filesSkipped))
+print("\n\n\t-- Finished --\n\tFiles Written:\t" + str(filesWritten) + "\n\tFiles Skipped:\t" + str(filesSkipped))
 
 if errorOccured:
-    print("\t\t\t-- An error(s) occurred while downloading file. --")
-    print("\t\tPlease check " + errorlogname + " for more information.")
+    print("\t-- An error(s) occurred while downloading file. --")
+    print("\tPlease check " + errorlogname + " for more information.")
