@@ -8,13 +8,13 @@
 
 import logging
 import os
-import time
+import datetime
 import glob
 import urllib.request
 import urllib.error
 
 # Setting script call time
-callTime = time.time()
+callTime = datetime.datetime.today()
 
 # runtime variables
 errorOccured = False
@@ -28,8 +28,8 @@ category = ""
 # Setup logging information
 # Get current Process ID for error log
 # Maybe date and time would be better than pid
-pid = os.getpid()
-errorlogname = "de-" + str(pid) + "-error.log"
+#pid = os.getpid()
+errorlogname = "de-error-" + callTime.strftime('%Y-%m-%d') + ".log"
 logging.basicConfig(format='%(asctime)s %(message)s', filename=errorlogname, level=logging.ERROR)
 
 # Can filter Using this.
