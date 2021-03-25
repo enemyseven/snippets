@@ -29,7 +29,8 @@ category = ""
 # Get current Process ID for error log
 # Maybe date and time would be better than pid
 #pid = os.getpid()
-errorlogname = "de-error-" + callTime.strftime('%Y-%m-%d') + ".log"
+formattedTime = callTime.strftime("%Y.%m.%d - %H.%M.%S")
+errorlogname = "de-error-" + formattedTime + ".log"
 logging.basicConfig(format='%(asctime)s %(message)s', filename=errorlogname, level=logging.ERROR)
 
 # Can filter Using this.
