@@ -13,7 +13,7 @@ draw = ImageDraw.Draw(image)
 text = "Mock Data Text"
 
 # Set Font parameters
-font = ImageFont.truetype('HelveticaNeue.ttc', 82)
+font = ImageFont.truetype('HelveticaNeue.ttc', 108)
 textwidth, textheight = draw.textsize(text, font)
 
 margin = 10
@@ -21,7 +21,7 @@ x = width - textwidth - margin
 y = height - textheight - margin
 
 # Finally draw the watermark in the bttom right corner
-draw.text((x,y), text, font=font, fill=(220,220,220,255))
+draw.text((x,y), text, font=font, fill=(12,32,116,255))
 # Open temporary file
 image.show()
 
