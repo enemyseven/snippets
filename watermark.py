@@ -3,29 +3,46 @@
 Create a new image for use as a
 watermark and save it to disk.
 """
+import os
 from PIL import Image, ImageDraw, ImageFont
 
-image = Image.new('RGBA', (1920, 1080), color = (255, 0, 0, 0))
-width, height = image.size
+def setup():
+    # Check to see if directory exists.
+    if not os.path.isdir("watermarks"):
+        # If not create it.
+        os.makedirs("watermarks")
 
-draw = ImageDraw.Draw(image)
-text = "Mock Data Text"
+def make_watermark(text):
+    image = Image.new('RGBA', (1920, 1080), color = (255, 0, 0, 0))
+    width, height = image.size
 
-# Set Font parameters
-font = ImageFont.truetype('HelveticaNeue.ttc', 108, 1)
-textwidth, textheight = draw.textsize(text, font)
+    draw = ImageDraw.Draw(image)
 
-margin = 0
-x = (width - textwidth) / 2 # - Centered
-y = (height - textheight) / 2 - 339 # - Centered
+    # Set Font parameters
+    font = ImageFont.truetype('HelveticaNeue.ttc', 108, 1)
+    textwidth, textheight = draw.textsize(text, font)
 
-# Finally draw the watermark in the bttom right corner
-draw.text((x,y), text, font=font, fill=(12,32,116,255))
-# Open temporary file
-image.show()
+    margin = 0
+    x = (width - textwidth) / 2 # - Centered
+    y = (height - textheight) / 2 - 339 # - Centered
 
-# Show mode info
-print("Mode: ", image.mode)
+    # Finally draw the watermark in the bttom right corner
+    draw.text((x,y), text, font=font, fill=(12,32,116,255))
+    # Open temporary file
+    image.show()
 
-# Save watermarked Image
-image.save('images/watermark.png')
+    # Show mode info
+    print("Mode: ", image.mode)
+
+    # Save watermarked Image
+    image.save('watermarks/watermark.png')
+
+def main():
+    setup()
+    
+    name = "Esmerelda Gillespie" + "\'s"
+    make_watermark(name)
+
+if __name__ == "__main__":
+    # execcute only if run as a script
+    main()
