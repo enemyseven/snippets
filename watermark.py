@@ -12,7 +12,7 @@ def setup():
         # If not create it.
         os.makedirs("watermarks")
 
-def make_watermark(text):
+def make_watermark(text, filepath):
     image = Image.new('RGBA', (1920, 1080), color = (255, 0, 0, 0))
     width, height = image.size
 
@@ -28,20 +28,24 @@ def make_watermark(text):
 
     # Finally draw the watermark in the bttom right corner
     draw.text((x,y), text, font=font, fill=(12,32,116,255))
-    # Open temporary file
-    image.show()
+    
+    # only do this if running as a script
+    if __name__ == "__main__":
+        # Open temporary file
+        image.show()
 
-    # Show mode info
-    print("Mode: ", image.mode)
+        # Show mode info
+        print("Mode: ", image.mode)
 
     # Save watermarked Image
-    image.save('watermarks/watermark.png')
+    image.save(filepath)
 
 def main():
     setup()
     
-    name = "Esmerelda Gillespie" + "\'s"
-    make_watermark(name)
+    text = "Esmerelda Gillespie" + "\'s"
+    filepath = "./watermarks/watermark_test.png"
+    make_watermark(text, filepath)
 
 if __name__ == "__main__":
     # execcute only if run as a script
