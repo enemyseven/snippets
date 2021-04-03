@@ -31,7 +31,7 @@ def make_watermark(text, filepath):
     # Finally draw the watermark in the bttom right corner
     draw.text((x,y), text, font=font, fill=(12,32,116,255))
     
-    img_resized = image.resize((1280,720), Image.LANCZOS)
+    image_resized = image.resize((1280,720), Image.LANCZOS)
     
     # only do this if running as a script
     if __name__ == "__main__":
@@ -40,9 +40,9 @@ def make_watermark(text, filepath):
 
         # Show mode info
         print("Mode: ", image.mode)
-
-    # Save watermarked Image
-    img_resized.save(filepath)
+    else:
+        # Save watermarked Image
+        image_resized.save(filepath)
 
 def main():
     setup()
