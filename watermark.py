@@ -8,9 +8,9 @@ from PIL import Image, ImageDraw, ImageFont
 
 def setup():
     # Check to see if directory exists.
-    if not os.path.isdir("watermarks"):
+    if not os.path.isdir("watermark-images"):
         # If not create it.
-        os.makedirs("watermarks")
+        os.makedirs("watermark-images")
 
 def make_watermark(text, filepath):
     scale = 1
@@ -48,7 +48,7 @@ def main():
     setup()
     
     text = "Esmerelda Gillespie" + "\'s"
-    filepath = "./watermarks/watermark_test.png"
+    filepath = "./watermark-images/watermark_test.png"
     make_watermark(text, filepath)
 
 if __name__ == "__main__":
