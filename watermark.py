@@ -21,7 +21,11 @@ def make_watermark(text, filepath):
     draw.fontmode = "L"
 
     # Set Font parameters
-    font = ImageFont.truetype('HelveticaNeue.ttc', 108 * scale, 1)
+    if lev(text) > 22:
+        fontsize = 90
+    else:
+        fontsize = 108
+    font = ImageFont.truetype('HelveticaNeue.ttc', fontsize * scale, 1)
     textwidth, textheight = draw.textsize(text, font)
 
     margin = 0
