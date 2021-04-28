@@ -126,6 +126,10 @@ def makeVideos():
             
             execute = [
                 ffmpeg,
+                '-fflags',  # necessary to ensure that the
+                '+genpts',  # concatenated audio segments
+                '-async',   # will switch over at the .
+                '1',        # same time as the video segment
                 '-i',
                 f'{buildString}',
                 '-c',
