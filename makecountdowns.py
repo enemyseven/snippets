@@ -36,7 +36,10 @@ def setup():
         
 def processName(input):
     if input[-1] == 's':
-        return input + "\'"
+        if input[-2] == 's':
+            return input + "\'s"
+        else:
+            return input +"\'"
     else:
         return input + "\'s"
 
