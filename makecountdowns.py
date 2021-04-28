@@ -15,7 +15,7 @@ import subprocess
 import csv
 from watermark import make_watermark
 
-VERSION = '0.0.1'
+VERSION = '0.0.2'
 
 # MARK: Variables
 
@@ -33,6 +33,12 @@ def setup():
     if not os.path.isdir("output"):
         # If not create it.
         os.makedirs("output")
+        
+def processName(input):
+    if input[-1] == 's':
+        return input + "\'"
+    else:
+        return input + "\'s"
 
 def main():
     print("Starting individual data work...")
@@ -43,7 +49,7 @@ def main():
             name = row['Name_for_Video_Overlay']
             winner_id = row['Winner_ID']
             
-            wm_text = name + "\'s"
+            wm_text = processName(name)
             wm_filepath = watermarkPath + winner_id + ".png"
             
             make_watermark(wm_text, wm_filepath)
