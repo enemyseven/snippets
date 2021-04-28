@@ -21,7 +21,7 @@ def make_watermark(text, filepath):
     draw.fontmode = "L"
 
     # Set Font parameters
-    if lev(text) > 22:
+    if len(text) > 22:
         fontsize = 90
     else:
         fontsize = 108
