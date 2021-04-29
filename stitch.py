@@ -4,22 +4,24 @@
 Name: FFmpeg Concatenate Script
 Author: Cody Hill
 Date Created: February 23, 2021
-Last Modified: February 23, 2021
+Last Modified: April 28, 2021
 Licensed under the GNU General Public License Version 3 (GNU GPL v3),
     available at: https://www.gnu.org/licenses/gpl-3.0.txt
 (C) 2021 Cody Hill
 """
 import time
 import os
+import sys
+import getopt
 import subprocess
 import csv
 
-VERSION = '0.0.5'
+VERSION = '0.0.6'
 
 # MARK: Variables
 
 # Data Sources
-sourceCSV = 'example.csv'
+#sourceCSV = 'example.csv'
 sourceCommonFiles = 'common_files.txt'
 
 # FFMPEG executable
@@ -87,7 +89,7 @@ def purgeTemporaryFiles(directory):
         path_to_file = os.path.join(directory, file)
         os.remove(path_to_file)
 
-def makeVideos():
+def makeVideos(sourceCSV):
     # Make note of time
     start = time.time()
 
@@ -156,9 +158,22 @@ def makeVideos():
     print("Total time: " + str(totalTime))
 
 
-def main():
+def main(argv):
     setup()
-    makeVideos()
+    inputfile = ''
+    try:
+        opts, args = getopt.getopt(argv,"hi:",["ifile="])
+    except getopt.GetoptError:
+        print("stitch.py -i <inputfile>")
+        sys.exit(2)
+        
+    for opt, arg in opts:
+        if opt == '-h':
+            print("stitch.py -i <inputfile>")
+            sys.exit()
+        elif opt in ("-i", "--ifile"):
+            inputfile = arg
+            makeVideos(inputfile)
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
