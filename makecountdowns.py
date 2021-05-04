@@ -35,13 +35,14 @@ def setup():
         os.makedirs("output")
         
 def processName(input):
-    if input[-1] == 's':
-        if input[-2] == 's':
-            return input + "\'s"
+    capitalized = input.title()
+    if capitalized[-1] == 's':
+        if capitalized[-2] == 's':
+            return capitalized + "\'s"
         else:
-            return input +"\'"
+            return capitalized +"\'"
     else:
-        return input + "\'s"
+        return capitalized + "\'s"
 
 def main():
     print("Starting individual data work...")
