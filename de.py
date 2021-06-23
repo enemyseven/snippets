@@ -2,8 +2,8 @@
 """
 # Name: Download Everything
 # Description: Download files from URLs contained in text files.
-# Version: 2.93
-# Last Modified: 2021.03.24
+# Version: 2.95
+# Last Modified: 2021.06.23
 """
 
 import logging
@@ -20,6 +20,7 @@ callTime = datetime.datetime.today()
 errorOccured = False
 filesWritten = 0
 filesSkipped = 0
+filesNotFound = 0
 
 # Define Empty urls list
 urls = []
@@ -85,19 +86,24 @@ for url in urls:
     else:
         try:
             resp = urllib.request.urlopen(url)
-        except urllib.error.URLError as e:
+        except urllib.error.HTTPError as e:
             if hasattr(e, 'reason'):
                 logging.error("Error: Failed to reach the server for " + filename)
-                print('Failed to reach the server.')
-                print('Reason: ', e.reason)
+                print('\t\tFailed to reach the server.')
+                print('\t\tReason: ', e.reason)
             elif hasattr(e, 'code'):
                 logging.error("Error: Server couldn't fulfill the request for "+ filename)
                 print('\t\tThe server couldn\'t fulfill the request.')
                 print('\t\tError code: ', e.code)
+            filesNotFound += 1
+        except urllib.error.URLError as e:
+            logging.error("Error: " + str(e) + "\n\t\t\t\t\tRef: " + url)
+            print("\t\tError: Perhaps server does not exist.")
         else:
             if resp.getcode() != 200:
                 logging.error("Error: " + filename + " Not found on server.")
                 print("\t\tError: " + filename + " not found on server.")
+                filesNotFound += 1
                 errorOccured = True
             else:
                 with open( category + "/" + filename, "wb") as newfile:
@@ -106,7 +112,10 @@ for url in urls:
                     print("\t\tStatus: Success")
                     filesWritten += 1
 
-print("\n\n\t-- Finished --\n\tFiles Written:\t" + str(filesWritten) + "\n\tFiles Skipped:\t" + str(filesSkipped))
+print("\n\n\t---- Finished ----")
+print("\tWritten:\t" + str(filesWritten))
+print("\tSkipped:\t" + str(filesSkipped))
+print("\tNot found:\t" + str(filesNotFound))
 
 if errorOccured:
     print("\t-- An error(s) occurred while downloading file. --")
