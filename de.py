@@ -97,7 +97,7 @@ for url in urls:
                 print('\t\tError code: ', e.code)
             filesNotFound += 1
         except urllib.error.URLError as e:
-            logging.error("Error: " + str(e) + "\n\t\t\t\t\tRef: " + url)
+            logging.error("Error: " + e.reason + "\n\t\t\t\t\tRef: " + url)
             print("\t\tError: Perhaps server does not exist.")
         else:
             if resp.getcode() != 200:
