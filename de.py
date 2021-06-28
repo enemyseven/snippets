@@ -98,7 +98,10 @@ for url in urls:
             filesNotFound += 1
         except urllib.error.URLError as e:
             logging.error("Error: " + e.reason + "\n\t\t\t\t\tRef: " + url)
-            print("\t\tError: Perhaps server does not exist.")
+            print("\t\tURLError: Perhaps server does not exist.")
+        except TimeoutError as e:
+            logging.error("Error: " + e.reason + "\n\t\t\tRef: " + url)
+            print("\t\tTimeoutError\n\t\t" + e.reason)
         else:
             if resp.getcode() != 200:
                 logging.error("Error: " + filename + " Not found on server.")
