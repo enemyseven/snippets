@@ -3,7 +3,7 @@
 # Name: Download Everything
 # Description: Download files from URLs contained in text files.
 # Version: 2.95
-# Last Modified: 2021.06.23
+# Last Modified: 2021.06.28
 """
 
 import logging
@@ -100,8 +100,8 @@ for url in urls:
             logging.error("Error: " + e.reason + "\n\t\t\t\t\tRef: " + url)
             print("\t\tURLError: Perhaps server does not exist.")
         except TimeoutError as e:
-            logging.error("Error: " + e.reason + "\n\t\t\tRef: " + url)
-            print("\t\tTimeoutError\n\t\t" + e.reason)
+            logging.error("Error: TimeoutError\n\t\t\tRef: " + url)
+            print("\t\tTimeoutError\n\t\t")
         else:
             if resp.getcode() != 200:
                 logging.error("Error: " + filename + " Not found on server.")
