@@ -12,6 +12,7 @@ import datetime
 import glob
 import urllib.request
 import urllib.error
+import socket
 
 def downloadFile(sourceURL, destinationURL):
     try:
@@ -30,9 +31,9 @@ def downloadFile(sourceURL, destinationURL):
         logging.error("Error: " + e.reason + "\n\t\t\tRef: " + sourceURL)
         print("\t\tURLError\n\t\t" + e.reason)
         return False
-    except TimeoutError as e:
-        logging.error("Error: TimeoutError\n\t\t\tRef: " + url)
-        print("\t\tTimeoutError\n\t\t")
+    except socket.timeout:
+        logging.error("Error: socket timeout\n\t\t\tRef: " + url)
+        print("\t\Error: socket timeout\n\t\t")
     else:
         if resp.getcode() != 200:
             logging.error("Error: Not found on server.\n\t\t\t\tRef: " + sourceURL)
