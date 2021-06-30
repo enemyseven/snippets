@@ -18,7 +18,8 @@ import socket
 def get_extension(filename):
     basename = os.path.basename(filename)  # os independent
     ext = '.'.join(basename.split('.')[1:])
-    return '.' + ext if ext else None
+#     return '.' + ext if ext else None
+    return '' + ext if ext else None
 
 def download_file(sourceURL, destinationURL):
     try:
