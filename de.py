@@ -2,11 +2,11 @@
 """
 # Name: Download Everything
 # Description: Download files from URLs contained in text files.
-# Version: 2.96
-# Last Modified: 2021.06.29
+# Version: 3.00
+# Last Modified: 2021.06.30
 """
 
-import getopt
+import argparse
 import logging
 import os
 import sys
@@ -132,21 +132,22 @@ def process_urls(textFiles):
         print("\t-- An error(s) occurred while downloading file. --")
         print("\tPlease check " + errorlogname + " for more information.")
 
-def main(argv):
-    inputfile = ''
-    try:
-        opts, args = getopt.getopt(argv,"hi:",["ifile="])
-    except getopt.GetoptError:
-        print("de.py -i <inputfile>")
-        sys.exit(2)
-        
-    for opt, arg in opts:
-        if opt == '-h':
-            print("de.py -i <inputfile>")
-            sys.exit()
-        elif opt in ("-i", "--ifile"):
-            inputfile = arg
-            process_urls([inputfile])
+def main():
+    parser = argparse.ArgumentParser(prog='de', description='Download all URLs in text files.')
+    parser.add_argument(
+    'files',
+#    '--input',
+#    type=argparse.FileType('r'),
+    type=str,
+    nargs='*',
+    help='Text files to process')
+
+    args = parser.parse_args()
+    
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
+    process_urls(args.files)
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()
