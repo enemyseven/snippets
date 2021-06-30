@@ -2,10 +2,11 @@
 """
 # Name: Download Everything
 # Description: Download files from URLs contained in text files.
-# Version: 2.95
+# Version: 2.96
 # Last Modified: 2021.06.29
 """
 
+import getopt
 import logging
 import os
 import sys
@@ -53,7 +54,7 @@ def download_file(sourceURL, destinationURL):
                 print("\t\tSuccessfully downloaded.")
                 return True
 
-def main(argv):
+def process_urls(textFiles):
     # ----- Main part of Script -----
     
     # Setting script call time
@@ -78,7 +79,7 @@ def main(argv):
     logging.basicConfig(format='%(asctime)s %(message)s', filename=errorlogname, level=logging.ERROR)
 
     # Can filter Using this.
-    textFiles = glob.glob("*-urls.txt")
+    # textFiles = glob.glob("*-urls.txt")
     print("Using Files:\t" + str(textFiles).strip('[]') + "\n")
 
     # Replace this with something that reads all .txt files into the list
@@ -130,6 +131,22 @@ def main(argv):
     if errorOccured:
         print("\t-- An error(s) occurred while downloading file. --")
         print("\tPlease check " + errorlogname + " for more information.")
+
+def main(argv):
+    inputfile = ''
+    try:
+        opts, args = getopt.getopt(argv,"hi:",["ifile="])
+    except getopt.GetoptError:
+        print("de.py -i <inputfile>")
+        sys.exit(2)
+        
+    for opt, arg in opts:
+        if opt == '-h':
+            print("de.py -i <inputfile>")
+            sys.exit()
+        elif opt in ("-i", "--ifile"):
+            inputfile = arg
+            process_urls([inputfile])
 
 if __name__ == "__main__":
     main(sys.argv[1:])
