@@ -1,152 +1,179 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-# Name: Download Everything
-# Description: Download files from URLs contained in text files.
-# Version: 2.96
-# Last Modified: 2021.06.29
+Name: FFmpeg Concatenate Script
+Author: Cody Hill
+Date Created: February 23, 2021
+Last Modified: April 28, 2021
+Licensed under the GNU General Public License Version 3 (GNU GPL v3),
+    available at: https://www.gnu.org/licenses/gpl-3.0.txt
+(C) 2021 Cody Hill
 """
-
-import getopt
-import logging
+import time
 import os
 import sys
-import datetime
-import glob
-import urllib.request
-import urllib.error
-import socket
+import getopt
+import subprocess
+import csv
 
-def get_extension(filename):
-    basename = os.path.basename(filename)  # os independent
-    ext = '.'.join(basename.split('.')[1:])
-#    return '.' + ext if ext else None
-    return '' + ext if ext else None
+VERSION = '0.0.6'
 
-def download_file(sourceURL, destinationURL):
-    try:
-        resp = urllib.request.urlopen(sourceURL)
-    except urllib.error.HTTPError as e:
-        if hasattr(e, 'reason'):
-            logging.error("Error: Failed to reach the server.\n\t\t\t\t\tRef: " + sourceURL)
-            print('\t\tFailed to reach the server.')
-            print('\t\tReason: ', e.reason)
-        elif hasattr(e, 'code'):
-            logging.error("Error: Server couldn't fulfill the request.\n\t\t\t\t\tRef: " + sourceURL)
-            print('\t\tThe server couldn\'t fulfill the request.')
-            print('\t\tError code: ', e.code)
-        return False
-    except urllib.error.URLError as e:
-        logging.error("Error: " + str(e.reason) + "\n\t\t\tRef: " + sourceURL)
-        print("\t\tURLError\n\t\t" + str(e.reason))
-        return False
-    except socket.timeout:
-        logging.error("Error: socket timeout\n\t\t\tRef: " + url)
-        print("\t\Error: socket timeout\n\t\t")
+# MARK: Variables
+
+# Data Sources
+#sourceCSV = 'example.csv'
+sourceCommonFiles = 'common_files.txt'
+
+# FFMPEG executable
+ffmpeg = "./ffmpeg"
+
+# Directories
+uniquePath = "./unique/"
+cachePath = "./cache/"
+commonPath = "./common/"
+outputPath = "./output/"
+
+# MARK: Functions
+
+def setup():
+    if not os.path.isdir(outputPath):
+        os.makedirs(outputPath)
+
+def processVideo(input):
+    pre, ext = os.path.splitext(input)
+    cachename = pre + ".ts"
+    if not os.path.isfile(cachename):
+        execute = [
+            ffmpeg,
+            '-i',
+            input,
+            '-c',
+            'copy',
+            '-ar',
+            '48000',
+            '-bsf:v',
+            'h264_mp4toannexb',
+            '-f',
+            'mpegts',
+            f'{cachename}',
+            '-y'
+        ]
+        try:
+            subprocess.run(execute, check=True)
+        except subprocess.CalledProcessError as e:
+            print("Early exit due to error.")
+            exit()
+            
+def isCached(input):
+    pre, ext = os.path.splitext(input)
+    cachename = pre + ".ts"
+
+    if os.path.isfile(cachename):
+        return True
     else:
-        if resp.getcode() != 200:
-            logging.error("Error: Not found on server.\n\t\t\t\tRef: " + sourceURL)
-            print("\t\tError: File not found on server.")
-            return False
-        else:
-            with open( destinationURL, "wb") as newfile:
-                newfile.write(resp.read())
-                logging.info(destinationURL + ": OK.")
-                print("\t\tSuccessfully downloaded.")
-                return True
+        return False
 
-def process_urls(textFiles):
-    # ----- Main part of Script -----
-    
-    # Setting script call time
-    callTime = datetime.datetime.today()
+def purgeTemporaryFiles(directory):
+    commonFiles = []
+    # Get a list of files used in multiple videos
+    with open(sourceCommonFiles) as f:
+        commonFiles.extend(f.read().splitlines())
+        
+    files_in_directory = os.listdir(directory)
+    filtered_files = [file for file in files_in_directory if file.endswith(".ts")]
 
-    # runtime variables
-    errorOccured = False
-    filesWritten = 0
-    filesSkipped = 0
-    filesNotFound = 0
+    for file in filtered_files:
+        # Check for common files in the unique directory in case "someone" just dumped everything in one place...
+        if file in commonFiles:
+            continue
+        path_to_file = os.path.join(directory, file)
+        os.remove(path_to_file)
 
-    # Define Empty urls list
-    urls = []
-    category = ""
+def makeVideos(sourceCSV):
+    # Make note of time
+    start = time.time()
 
-    # Setup logging information
-    # Get current Process ID for error log
-    # Maybe date and time would be better than pid
-    #pid = os.getpid()
-    formattedTime = callTime.strftime("%Y.%m.%d - %H.%M.%S")
-    errorlogname = "de-error-" + formattedTime + ".log"
-    logging.basicConfig(format='%(asctime)s %(message)s', filename=errorlogname, level=logging.ERROR)
+    print("Starting individual data work...")
+    with open(sourceCSV, newline = '', encoding='utf-8-sig') as csvfile:
+        csvreader = csv.DictReader(csvfile)
+        for row in csvreader:
+            outputStack = []
+            buildString = 'concat:'
+            
+            outputFile = outputPath + row['Winner_ID'] + "_stitched.mp4"
+            
+            outputStack.append(uniquePath + row['Section_1']) # Countdown
+            outputStack.append(commonPath + row['Section_2']) # Common Entertainment
+            outputStack.append(uniquePath + row['Section_3']) # Manager Video
+            outputStack.append(commonPath + row['Section_4']) # Show (full or intro)
+            # !!! ONLY IF AVAILABLE !!!
+            if row['Section_5']:
+                outputStack.append(uniquePath + row['Section_5']) # Thank You Video
+            if row['Section_6']:
+                outputStack.append(commonPath + row['Section_6']) # Outro
+            
+            outputStack.append(commonPath + row['Section_7']) # Closing Video
+            
+            # Process Videos
+            for video in outputStack:
+                if isCached(video):
+                    print("\tVideo Already Cached.")
+                else:
+                    print("\tCreating Video Cache")
+                    processVideo(video)
+                
+                pre, ext = os.path.splitext(video)
+                buildString += pre + ".ts|"
+            buildString = buildString[:-1]
+            
+            execute = [
+                ffmpeg,
+                '-fflags',  # necessary to ensure that the
+                '+genpts',  # concatenated audio segments
+                '-async',   # will switch over at the .
+                '1',        # same time as the video segment
+                '-i',
+                f'{buildString}',
+                '-c',
+                'copy',
+                '-bsf:a',
+                'aac_adtstoasc',
+                outputFile,
+                '-y'
+            ]
+            
+            try:
+                subprocess.run(execute, check=True)
+            except subprocess.CalledProcessError as e:
+                print(e.output)
+            
+            purgeTemporaryFiles(uniquePath)
+            
+    # Clean up global cache files here.
+            
+    # Output Time Spent
+    end = time.time()
+    totalTime = end - start
+    print("--- Complete ---")
+    print("Total time: " + str(totalTime))
 
-    # Can filter Using this.
-    # textFiles = glob.glob("*-urls.txt")
-    print("Using Files:\t" + str(textFiles).strip('[]') + "\n")
-
-    # Replace this with something that reads all .txt files into the list
-    for textFile in textFiles:
-        with open(textFile) as f:
-            urls.extend(f.read().splitlines())
-
-    for url in urls:
-        # Silence Empty line errors.
-        if url.strip() == "":
-            #print("Error: Encounted empty line")
-            break
-
-        filename = url[url.rfind('/') + 1:]
-        fileExtension = get_extension(filename)
-
-        # If you want to separate stuff by file extension.
-        if fileExtension == None:
-            category = 'unknown'
-        else:
-            category = fileExtension.lower()
-
-        # loop through them and prepend the domain name and folder
-
-        # Check if category directory exists.
-        if not os.path.isdir(category):
-            # If not create it
-            os.makedirs(category)
-
-        logging.info("Processing " + filename)
-        print("\nProcessing:\t" + filename)
-
-        if os.path.isfile( category + "/" + filename ):
-            # File does not exist. So Download it.
-            print("\t\tStatus: file already exists.")
-            logging.warning("Warning: " + filename + " already Exists.")
-            filesSkipped += 1
-        else:
-            if (download_file(url, category + '/' + filename)):
-                filesWritten += 1
-            else:
-                filesNotFound += 1
-
-    print("\n\n\t---- Finished ----")
-    print("\tWritten:\t" + str(filesWritten))
-    print("\tSkipped:\t" + str(filesSkipped))
-    print("\tNot found:\t" + str(filesNotFound))
-
-    if errorOccured:
-        print("\t-- An error(s) occurred while downloading file. --")
-        print("\tPlease check " + errorlogname + " for more information.")
 
 def main(argv):
+    setup()
     inputfile = ''
     try:
         opts, args = getopt.getopt(argv,"hi:",["ifile="])
     except getopt.GetoptError:
-        print("de.py -i <inputfile>")
+        print("stitch.py -i <inputfile>")
         sys.exit(2)
         
     for opt, arg in opts:
         if opt == '-h':
-            print("de.py -i <inputfile>")
+            print("stitch.py -i <inputfile>")
             sys.exit()
         elif opt in ("-i", "--ifile"):
             inputfile = arg
-            process_urls([inputfile])
+            makeVideos(inputfile)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
