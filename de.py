@@ -3,7 +3,7 @@
 # Name: Download Everything
 # Description: Download files from URLs contained in text files.
 # Version: 2.95
-# Last Modified: 2021.06.28
+# Last Modified: 2021.06.29
 """
 
 import logging
@@ -14,7 +14,12 @@ import urllib.request
 import urllib.error
 import socket
 
-def downloadFile(sourceURL, destinationURL):
+def get_extension(filename):
+    basename = os.path.basename(filename)  # os independent
+    ext = '.'.join(basename.split('.')[1:])
+    return '.' + ext if ext else None
+
+def download_file(sourceURL, destinationURL):
     try:
         resp = urllib.request.urlopen(sourceURL)
     except urllib.error.HTTPError as e:
@@ -84,23 +89,13 @@ for url in urls:
         break
 
     filename = url[url.rfind('/') + 1:]
-    fileExtension = filename[filename.rfind('.') + 1:].lower()
+    fileExtension = get_extension(filename)
     
     # If you want to separate stuff by file extension.
-    if fileExtension == "mp4":
-        category = "mp4"
-    elif fileExtension == "mov":
-        category = "mov"
-    elif fileExtension == "jpg":
-        category = "jpg"
-    elif fileExtension == "jpeg":
-        category = "jpeg"
-    elif fileExtension == "png":
-        category = "png"
-    elif fileExtension == "gif":
-        category = "gif"
-    else:
-        category = "other"
+    if fileExtension == None:
+        category = 'unknown'
+   else:
+        category = fileExtension.lowered()
 
     # loop through them and prepend the domain name and folder
     
@@ -118,7 +113,7 @@ for url in urls:
         logging.warning("Warning: " + filename + " already Exists.")
         filesSkipped += 1
     else:
-        if (decommon.downloadFile(url, category + '/' + filename)):
+        if (decommon.download_file(url, category + '/' + filename)):
             filesWritten += 1
         else:
             filesNotFound += 1
