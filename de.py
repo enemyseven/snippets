@@ -54,13 +54,11 @@ def download_file(sourceURL, destinationURL):
                 print("\t\tSuccessfully downloaded.")
                 return True
 
-def process_urls(textFiles):
-    # ----- Main part of Script -----
-    
+def process_urls(textFiles):   
     # Setting script call time
     callTime = datetime.datetime.today()
 
-    # runtime variables
+    # statistical variables
     errorOccured = False
     filesWritten = 0
     filesSkipped = 0
@@ -71,18 +69,14 @@ def process_urls(textFiles):
     category = ""
 
     # Setup logging information
-    # Get current Process ID for error log
-    # Maybe date and time would be better than pid
-    #pid = os.getpid()
     formattedTime = callTime.strftime("%Y.%m.%d - %H.%M.%S")
     errorlogname = "de-error-" + formattedTime + ".log"
     logging.basicConfig(format='%(asctime)s %(message)s', filename=errorlogname, level=logging.ERROR)
 
-    # Can filter Using this.
-    # textFiles = glob.glob("*-urls.txt")
+    # Display what files are being used.
     print("Using Files:\t" + str(textFiles).strip('[]') + "\n")
 
-    # Replace this with something that reads all .txt files into the list
+    # Read and files into a list to process
     for textFile in textFiles:
         with open(textFile) as f:
             urls.extend(f.read().splitlines())
@@ -136,8 +130,6 @@ def main():
     parser = argparse.ArgumentParser(prog='de', description='Download all URLs in text files.')
     parser.add_argument(
     'files',
-#    '--input',
-#    type=argparse.FileType('r'),
     type=str,
     nargs='*',
     help='Text files to process')
