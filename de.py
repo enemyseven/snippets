@@ -47,6 +47,7 @@ def download_file(sourceURL, destinationPath):
     else:
         if resp.getcode() != 200:
             logging.error("Error: Not found on server.\n\t\tRef: " + sourceURL)
+            print("Status: Download Failed")
             print("\t\Resason: File not found on server.")
             return False
         else:
@@ -61,7 +62,6 @@ def process_urls(textFiles):
     callTime = datetime.datetime.today()
 
     # statistical variables
-    errorOccured = False
     filesWritten = 0
     filesSkipped = 0
     filesNotFound = 0
@@ -98,8 +98,6 @@ def process_urls(textFiles):
         else:
             category = fileExtension.lower()
 
-        # loop through them and prepend the domain name and folder
-
         # Check if category directory exists.
         if not os.path.isdir(category):
             # If not create it
@@ -109,7 +107,7 @@ def process_urls(textFiles):
 
         if os.path.isfile( category + "/" + filename ):
             # File already exists. So skip it.
-            print("\t\tStatus: File already exists.")
+            print("\t\tStatus: File Already Exists.")
             filesSkipped += 1
         else:
             if (download_file(url, category + '/' + filename)):
@@ -121,10 +119,6 @@ def process_urls(textFiles):
     print("\tWritten:\t" + str(filesWritten))
     print("\tSkipped:\t" + str(filesSkipped))
     print("\tNot found:\t" + str(filesNotFound))
-
-    if errorOccured:
-        print("\t-- An error(s) occurred while downloading file. --")
-        print("\tPlease check " + errorlogname + " for more information.")
 
 def main():
     parser = argparse.ArgumentParser(prog='de', description='Download all URLs in text files.')
