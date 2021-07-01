@@ -2,7 +2,7 @@
 """
 # Name: Download Everything
 # Description: Download files from URLs contained in text files.
-# Version: 3.00
+# Version: 3.02
 # Last Modified: 2021.06.30
 """
 
@@ -19,7 +19,6 @@ import socket
 def get_extension(filename):
     basename = os.path.basename(filename)  # os independent
     ext = '.'.join(basename.split('.')[1:])
-#     return '.' + ext if ext else None
     return '' + ext if ext else None
 
 def download_file(sourceURL, destinationURL):
@@ -103,13 +102,11 @@ def process_urls(textFiles):
             # If not create it
             os.makedirs(category)
 
-        logging.info("Processing " + filename)
         print("\nProcessing:\t" + filename)
 
         if os.path.isfile( category + "/" + filename ):
-            # File does not exist. So Download it.
+            # File already exists. So skip it.
             print("\t\tStatus: file already exists.")
-            logging.warning("Warning: " + filename + " already Exists.")
             filesSkipped += 1
         else:
             if (download_file(url, category + '/' + filename)):
