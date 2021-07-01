@@ -2,8 +2,8 @@
 """
 # Name: Download Everything
 # Description: Download files from URLs contained in text files.
-# Version: 3.02
-# Last Modified: 2021.06.30
+# Version: 3.04
+# Last Modified: 2021.07.01
 """
 
 import argparse
@@ -27,31 +27,33 @@ def download_file(sourceURL, destinationPath):
     except urllib.error.HTTPError as e:
         if hasattr(e, 'reason'):
             logging.error("Error: Failed to reach the server.\n\t\tRef: " + sourceURL)
-            print('\t\tFailed to reach the server.')
-            print('\t\tReason: ', e.reason)
+            print('\t\tStatus: Download Failed')
+            print('\t\tReason:', e.reason)
         elif hasattr(e, 'code'):
             logging.error("Error: Server couldn't fulfill the request.\n\t\tRef: " + sourceURL)
-            print('\t\tThe server couldn\'t fulfill the request.')
-            print('\t\tError code: ', e.code)
+            print('\t\tStatus: The server couldn\'t fulfill the request.')
+            print('\t\tReason: Error Code', e.code)
         return False
     except urllib.error.URLError as e:
         logging.error("Error: " + str(e.reason) + "\n\t\tRef: " + sourceURL)
-        print("\t\tURLError\n\t\t" + str(e.reason))
+        print("\t\tStatus: URLError")
+        print("\t\tReason:", str(e.reason))
         return False
     except socket.timeout:
         logging.error("Error: socket timeout\n\t\tRef: " + sourceURL)
-        print("\t\Error: socket timeout\n\t\t")
+        print("\t\Status: Socket Error")
+        print("\t\Reason: Socket Timeout")
         return False
     else:
         if resp.getcode() != 200:
             logging.error("Error: Not found on server.\n\t\tRef: " + sourceURL)
-            print("\t\tError: File not found on server.")
+            print("\t\Resason: File not found on server.")
             return False
         else:
             with open( destinationPath, "wb") as newfile:
                 newfile.write(resp.read())
                 logging.info(destinationPath + ": OK.")
-                print("\t\tSuccessfully downloaded.")
+                print("\t\tStatus: Successfully downloaded.")
                 return True
 
 def process_urls(textFiles):
@@ -107,7 +109,7 @@ def process_urls(textFiles):
 
         if os.path.isfile( category + "/" + filename ):
             # File already exists. So skip it.
-            print("\t\tStatus: file already exists.")
+            print("\t\tStatus: File already exists.")
             filesSkipped += 1
         else:
             if (download_file(url, category + '/' + filename)):
