@@ -21,39 +21,40 @@ def get_extension(filename):
     ext = '.'.join(basename.split('.')[1:])
     return '' + ext if ext else None
 
-def download_file(sourceURL, destinationURL):
+def download_file(sourceURL, destinationPath):
     try:
         resp = urllib.request.urlopen(sourceURL)
     except urllib.error.HTTPError as e:
         if hasattr(e, 'reason'):
-            logging.error("Error: Failed to reach the server.\n\t\t\t\t\tRef: " + sourceURL)
+            logging.error("Error: Failed to reach the server.\n\t\tRef: " + sourceURL)
             print('\t\tFailed to reach the server.')
             print('\t\tReason: ', e.reason)
         elif hasattr(e, 'code'):
-            logging.error("Error: Server couldn't fulfill the request.\n\t\t\t\t\tRef: " + sourceURL)
+            logging.error("Error: Server couldn't fulfill the request.\n\t\tRef: " + sourceURL)
             print('\t\tThe server couldn\'t fulfill the request.')
             print('\t\tError code: ', e.code)
         return False
     except urllib.error.URLError as e:
-        logging.error("Error: " + str(e.reason) + "\n\t\t\tRef: " + sourceURL)
+        logging.error("Error: " + str(e.reason) + "\n\t\tRef: " + sourceURL)
         print("\t\tURLError\n\t\t" + str(e.reason))
         return False
     except socket.timeout:
-        logging.error("Error: socket timeout\n\t\t\tRef: " + url)
+        logging.error("Error: socket timeout\n\t\tRef: " + sourceURL)
         print("\t\Error: socket timeout\n\t\t")
+        return False
     else:
         if resp.getcode() != 200:
-            logging.error("Error: Not found on server.\n\t\t\t\tRef: " + sourceURL)
+            logging.error("Error: Not found on server.\n\t\tRef: " + sourceURL)
             print("\t\tError: File not found on server.")
             return False
         else:
-            with open( destinationURL, "wb") as newfile:
+            with open( destinationPath, "wb") as newfile:
                 newfile.write(resp.read())
-                logging.info(destinationURL + ": OK.")
+                logging.info(destinationPath + ": OK.")
                 print("\t\tSuccessfully downloaded.")
                 return True
 
-def process_urls(textFiles):   
+def process_urls(textFiles):
     # Setting script call time
     callTime = datetime.datetime.today()
 
