@@ -1,0 +1,87 @@
+<html>
+<head>
+<script type="text/javascript">
+const pollUrls = ["https://io.cvent.com/polling/v1/api/polls/sp-uxtbl6",
+"https://io.cvent.com/polling/v1/api/polls/sppt8n3b",
+"https://io.cvent.com/polling/v1/api/polls/sp-txs69j",
+"https://io.cvent.com/polling/v1/api/polls/sp-sufcv",
+"https://io.cvent.com/polling/v1/api/polls/spdkoaj6",
+"https://io.cvent.com/polling/v1/api/polls/sp-8yq31s",
+"https://io.cvent.com/polling/v1/api/polls/sp-k4ef8i",
+"https://io.cvent.com/polling/v1/api/polls/spnysvwq",
+"https://io.cvent.com/polling/v1/api/polls/sp-ba4s2",
+"https://io.cvent.com/polling/v1/api/polls/sp-kzlbcr",
+"https://io.cvent.com/polling/v1/api/polls/spmyx2i0",
+"https://io.cvent.com/polling/v1/api/polls/sp-gbg758",
+"https://io.cvent.com/polling/v1/api/polls/spt23zn",
+"https://io.cvent.com/polling/v1/api/polls/sp-8t3v0c",
+"https://io.cvent.com/polling/v1/api/polls/sp6o6p3o",
+"https://io.cvent.com/polling/v1/api/polls/sphfvrmk",
+"https://io.cvent.com/polling/v1/api/polls/spptfnjd",
+"https://io.cvent.com/polling/v1/api/polls/sp-gotpce",
+"https://io.cvent.com/polling/v1/api/polls/spvsbzgz",
+"https://io.cvent.com/polling/v1/api/polls/spj8dwve",
+"https://io.cvent.com/polling/v1/api/polls/sp-2bipyi"];
+
+let currentPoll = 0;
+function prevUrl() {
+console.log(currentPoll);
+	if (currentPoll > 0) {
+	currentPoll -= 1;
+		var site = pollUrls[currentPoll];
+		document.getElementsByName('poll')[0].src = site;
+		document.getElementsByName('pollNumber')[0].innerHTML = currentPoll;
+	}
+}
+function nextUrl() {
+console.log(currentPoll);
+console.log(pollUrls.length);
+	if (currentPoll < pollUrls.length) {
+		currentPoll += 1;
+		var site = pollUrls[currentPoll];
+		document.getElementsByName('poll')[0].src = site;
+		document.getElementsByName('pollNumber')[0].innerHTML = currentPoll;
+	}
+}
+document.addEventListener('keyup', event => {
+  if (event.code === 'Space') {
+    nextUrl();
+  }
+  if (event.code === 'ArrowRight') {
+    
+  }
+  switch (event.code) {
+    case "ArrowLeft":
+        prevUrl();
+        break;
+    case "ArrowRight":
+        nextUrl();
+        break;
+    case "ArrowUp":
+        prevUrl();
+        break;
+    case "ArrowDown":
+        nextUrl();
+        break;
+}
+})
+</script>
+<style>
+body {
+  overflow: hidden; /* Hide scrollbars */
+}
+#nav {
+	display: flex;
+	justify-content: space-evenly;
+}
+</style>
+</head>
+<body>
+<iframe src="https://io.cvent.com/polling/v1/api/polls/sp-uxtbl6" height=98% width=100% frameborder=0 name = "poll" style =""></iframe>
+<div name="nav" id="nav">
+	<a href="javascript:prevUrl();">Previous</a>
+	<span name="pollNumber" >0</span>
+	<a href="javascript:nextUrl();">Next</a>
+</div>
+</body>
+</html>
