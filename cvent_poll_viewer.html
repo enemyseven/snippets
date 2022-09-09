@@ -30,22 +30,23 @@ console.log(currentPoll);
 	currentPoll -= 1;
 		var site = pollUrls[currentPoll];
 		document.getElementsByName('poll')[0].src = site;
-		document.getElementsByName('pollNumber')[0].innerHTML = currentPoll;
+		document.getElementsByName('pollNumber')[0].innerHTML = `${currentPoll + 1}/${pollUrls.length}`;
 	}
 }
 function nextUrl() {
 console.log(currentPoll);
 console.log(pollUrls.length);
-	if (currentPoll < pollUrls.length) {
+	if (currentPoll < pollUrls.length - 1) {
 		currentPoll += 1;
 		var site = pollUrls[currentPoll];
 		document.getElementsByName('poll')[0].src = site;
-		document.getElementsByName('pollNumber')[0].innerHTML = currentPoll;
+		document.getElementsByName('pollNumber')[0].innerHTML = `${currentPoll + 1}/${pollUrls.length}`;
 	}
 }
 document.addEventListener('keyup', event => {
 
   switch (event.code) {
+    case "Space":
         nextUrl();
         break;
     case "ArrowLeft":
@@ -62,23 +63,48 @@ document.addEventListener('keyup', event => {
         break;
   }
 })
+window.addEventListener('load', event => {
+	document.getElementsByName('pollNumber')[0].innerHTML = `${currentPoll + 1}/${pollUrls.length}`;
+})
 </script>
 <style>
 body {
   overflow: hidden; /* Hide scrollbars */
 }
+a {
+	font-family: Arial, Helvetica, sans-serif;
+	color: blue;
+	text-decoration: none;
+}
+#main {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+#graphWrapper {
+	height: 94%;
+}
 #nav {
+	bottom: 0;
+	height: 48px;
 	display: flex;
 	justify-content: space-evenly;
+}
+span[name="pollNumber"] {
+	font-family: Arial, Helvetic, sans-serif;
 }
 </style>
 </head>
 <body>
-<iframe src="https://io.cvent.com/polling/v1/api/polls/sp-uxtbl6" height=98% width=100% frameborder=0 name = "poll" style =""></iframe>
+<div id="main">
+<div id="graphWrapper">
+	<iframe src="https://io.cvent.com/polling/v1/api/polls/sp-uxtbl6" height=94% width=100% frameborder=0 name = "poll" style =""></iframe>
+</div>
 <div name="nav" id="nav">
 	<a href="javascript:prevUrl();">Previous</a>
-	<span name="pollNumber" >0</span>
+	<span name="pollNumber" >-/-</span>
 	<a href="javascript:nextUrl();">Next</a>
+</div>
 </div>
 </body>
 </html>
